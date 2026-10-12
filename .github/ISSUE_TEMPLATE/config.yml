@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security issue
+    url: https://github.com/Jarvvski/opencode-serper/security/advisories/new
+    about: Report a vulnerability privately. Do not open a public issue.
+  - name: OpenCode documentation
+    url: https://opencode.ai/v2/docs/
+    about: Guides for OpenCode itself, plugins, and websearch.
