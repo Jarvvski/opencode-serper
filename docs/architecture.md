@@ -57,6 +57,14 @@ covered by unit tests without touching the network.
 
 The `serper.*` tools do not use this shape - they return the raw Serper JSON as a
 text result, since each endpoint (news, places, images, ...) has its own fields.
+That JSON is capped at `MAX_TOOL_CONTENT` (20,000 characters) by `truncate`, so a
+large scrape cannot blow the model's context window; the cut is marked with the
+original size.
+
+Because the provider only maps `snippet` into `content`, the built-in `websearch`
+tool answers from search snippets rather than full page content. That is the
+trade-off for routing the built-in tool through Serper; the `scrape` tool is the
+escape hatch for full page text.
 
 ## Key resolution
 

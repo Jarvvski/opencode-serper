@@ -61,12 +61,16 @@ refactors.
 - Websearch results are `{ url, title?, content?, time: { published? } }`; `url`
   and `time` are required. `execute(input, { signal })` receives an
   `AbortSignal` - pass it to `fetch`.
-- **Local installs are fiddly.** In 2.0.27 the `plugins` config array silently
-  ignores local absolute paths, a bare package name is npm-installed from the
-  registry, and `opencode plugin add` rejects local paths. Working installs are
-  a git/npm spec via `opencode plugin add` (what this repo uses:
-  `github:Jarvvski/opencode-serper`) or a `.ts`/`.js` file dropped in
-  `~/.config/opencode/plugins/`.
+- **Install specs.** `opencode plugin add` accepts npm names (with versions,
+  tags, ranges) and npm-compatible Git specs (`github:Jarvvski/opencode-serper`,
+  what this repo uses) but rejects local paths. The `plugins` config array does
+  accept local paths (`./plugins/local`, `/absolute/path/plugin.ts`), and a
+  `.ts`/`.js` file dropped in `~/.config/opencode/plugins/` is loaded directly.
+- **Runtime SDK comes from our own `dependencies`.** OpenCode installs the
+  plugin with npm and fetches `@opencode/plugin` from our `package.json`; the
+  server does not provide it. So the pinned version in `package.json` (currently
+  exact `2.0.27`) is what runs, and CI typechecks against it - keep them aligned
+  when bumping.
 - Plugin changes need a server restart to load; `opencode reload` does not
   reconcile plugins.
 

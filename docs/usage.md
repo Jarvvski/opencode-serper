@@ -24,6 +24,8 @@ Pick one:
    and paste your key. It is stored in OpenCode's credential store, outside
    `opencode.jsonc`.
 2. **Environment variable.** Export `SERPER_API_KEY` before starting OpenCode.
+   The key is read by the background service, so if one is already running,
+   restart it (`opencode service restart`) after changing the variable.
 3. **Plugin option.** Pass the key explicitly in `opencode.jsonc`:
 
    ```jsonc
@@ -51,6 +53,10 @@ To be explicit, or to switch back to another provider:
   "websearch": { "provider": "serper" },
 }
 ```
+
+To keep another provider as the default and use only the `serper.*` tools, pass
+`options.setDefault: false` when configuring the plugin. See
+[configuration.md](configuration.md#web-search-provider).
 
 Then ask for current information:
 

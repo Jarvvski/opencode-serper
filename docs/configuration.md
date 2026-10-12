@@ -36,6 +36,12 @@ opencode
 The plugin registers an `env` method for the `serper` integration, so a set
 `SERPER_API_KEY` also satisfies `/connect`.
 
+> **Caveat.** The key is read from the environment of the OpenCode **background
+> service**, not the shell you launch the TUI from. If a service is already
+> running, exporting `SERPER_API_KEY` in a new shell has no effect until you
+> restart it (`opencode service restart`). `/connect` stores the key in the
+> credential store and avoids this entirely.
+
 ### Via a plugin option
 
 ```jsonc
@@ -54,14 +60,31 @@ environment unless the config is not tracked or you are running in CI.
 
 ## Web search provider
 
-Installing the plugin selects `serper` as the default `websearch` provider. To
-set it explicitly, or to switch back to another provider:
+Installing the plugin selects `serper` as the default `websearch` provider, so
+the built-in `websearch` tool searches via Serper with no further setup. To set
+it explicitly, or to switch back to another provider:
 
 ```jsonc
 {
   "websearch": { "provider": "serper" },
 }
 ```
+
+To keep your own provider choice and only use the `serper.*` tools, opt out of
+the default with `options.setDefault: false`:
+
+```jsonc
+{
+  "plugins": [
+    { "package": "github:Jarvvski/opencode-serper", "options": { "setDefault": false } },
+  ],
+}
+```
+
+Serper's `websearch` provider maps the organic `snippet` into the result
+`content`, so answers are built from search snippets rather than full page
+content. If you want fuller content from the built-in tool, keep another
+provider as the default and use the `serper.*` tools for Serper's endpoints.
 
 See OpenCode's [websearch docs](https://opencode.ai/v2/docs/websearch) for the
 provider list and selection behaviour.

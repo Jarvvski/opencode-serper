@@ -23,6 +23,10 @@ the built-in `websearch` tool uses it.
 That is the whole setup. Agents can additionally call the `serper.*` tools
 (`news`, `scholar`, `places`, `images`, `autocomplete`, `scrape`) in Code Mode.
 
+Installing the plugin makes Serper the default search provider. To keep another
+provider and use only the `serper.*` tools, pass `options: { "setDefault": false }`
+— see [configuration](docs/configuration.md#web-search-provider).
+
 Full walkthrough, every tool, and troubleshooting:
 **[docs/usage.md](docs/usage.md)**.
 
