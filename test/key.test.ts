@@ -60,6 +60,23 @@ describe("resolveKey", () => {
     expect(key).toBe("from-env")
   })
 
+  test("falls through to the environment when the credential store throws", async () => {
+    process.env.SERPER_API_KEY = "from-env"
+    const ctx = {
+      options: {},
+      integration: {
+        connection: {
+          active: async () => {
+            throw new Error("credential store unavailable")
+          },
+          resolve: async () => undefined,
+        },
+      },
+    } as unknown as Plugin.Context
+
+    expect(await resolveKey(ctx)).toBe("from-env")
+  })
+
   test("throws an actionable error when nothing is configured", async () => {
     delete process.env.SERPER_API_KEY
     await expect(resolveKey(fakeContext())).rejects.toThrow(/Serper is not configured/)

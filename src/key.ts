@@ -10,9 +10,13 @@ export const INTEGRATION_ID = "serper"
  *   3. the ambient `SERPER_API_KEY` environment variable
  */
 export async function resolveKey(ctx: Plugin.Context): Promise<string> {
-  const connection = await ctx.integration.connection.active(INTEGRATION_ID)
-  const credential = connection ? await ctx.integration.connection.resolve(connection) : undefined
-  if (credential?.type === "key" && credential.key) return credential.key
+  try {
+    const connection = await ctx.integration.connection.active(INTEGRATION_ID)
+    const credential = connection ? await ctx.integration.connection.resolve(connection) : undefined
+    if (credential?.type === "key" && credential.key) return credential.key
+  } catch {
+    // A failing credential store must not mask the option/env fallbacks below.
+  }
 
   const optionKey = ctx.options.apiKey
   if (typeof optionKey === "string" && optionKey.trim()) return optionKey.trim()

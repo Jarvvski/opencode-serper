@@ -1,11 +1,11 @@
 import type { Plugin } from "@opencode/plugin"
-import { googleSearch, serperScrape } from "./serper"
+import { googleSearch, serperScrape, truncate } from "./serper"
 import { resolveKey } from "./key"
 
 export const TOOL_NAMESPACE = "serper"
 
 function json(value: unknown): { content: string } {
-  return { content: JSON.stringify(value, null, 2) }
+  return { content: truncate(JSON.stringify(value, null, 2)) }
 }
 
 /**

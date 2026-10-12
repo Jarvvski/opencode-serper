@@ -47,6 +47,19 @@ export function serperScrape<T>(key: string, body: unknown, signal?: AbortSignal
   return postJson<T>(SCRAPE_ENDPOINT, key, body, signal)
 }
 
+/** Maximum characters of a `serper.*` tool result before it is truncated. */
+export const MAX_TOOL_CONTENT = 20_000
+
+/**
+ * Cap a tool result string so a large scrape or image response cannot blow the
+ * model's context window. The marker names the original size so the agent knows
+ * the result was cut.
+ */
+export function truncate(text: string, limit: number = MAX_TOOL_CONTENT): string {
+  if (text.length <= limit) return text
+  return `${text.slice(0, limit)}\n… [truncated: showing ${limit} of ${text.length} characters]`
+}
+
 /** Map Serper organic results into OpenCode's websearch result shape. */
 export function toWebSearchResults(results: readonly SerperOrganicResult[]): WebSearchResult[] {
   return results.flatMap((result) => {

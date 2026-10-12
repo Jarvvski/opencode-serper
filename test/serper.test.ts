@@ -1,10 +1,12 @@
 import { afterEach, describe, expect, test } from "bun:test"
 import {
   GOOGLE_BASE,
+  MAX_TOOL_CONTENT,
   SCRAPE_ENDPOINT,
   googleSearch,
   serperScrape,
   toWebSearchResults,
+  truncate,
 } from "../src/serper"
 
 const realFetch = globalThis.fetch
@@ -58,6 +60,25 @@ describe("toWebSearchResults", () => {
   test("drops an unparseable date instead of emitting NaN", () => {
     const [result] = toWebSearchResults([{ link: "https://example.com", date: "not a date" }])
     expect(result.time).toEqual({})
+  })
+})
+
+describe("truncate", () => {
+  test("returns short text unchanged", () => {
+    expect(truncate("hello", 10)).toBe("hello")
+  })
+
+  test("caps long text and names the original size", () => {
+    const long = "x".repeat(50)
+    const out = truncate(long, 10)
+
+    expect(out.startsWith("x".repeat(10))).toBe(true)
+    expect(out).toContain("truncated: showing 10 of 50 characters")
+  })
+
+  test("uses MAX_TOOL_CONTENT as the default limit", () => {
+    const long = "x".repeat(MAX_TOOL_CONTENT + 1)
+    expect(truncate(long)).toContain(`of ${MAX_TOOL_CONTENT + 1} characters`)
   })
 })
 
