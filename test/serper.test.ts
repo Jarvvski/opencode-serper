@@ -1,5 +1,27 @@
-import { describe, expect, test } from "bun:test"
-import { toWebSearchResults } from "../src/serper"
+import { afterEach, describe, expect, test } from "bun:test"
+import {
+  GOOGLE_BASE,
+  SCRAPE_ENDPOINT,
+  googleSearch,
+  serperScrape,
+  toWebSearchResults,
+} from "../src/serper"
+
+const realFetch = globalThis.fetch
+let calls: Array<{ url: string; init: RequestInit }> = []
+
+function stubFetch(response: Response) {
+  calls = []
+  globalThis.fetch = (async (input: string | URL | Request, init?: RequestInit) => {
+    calls.push({ url: String(input), init: init ?? {} })
+    return response
+  }) as typeof fetch
+  return calls
+}
+
+afterEach(() => {
+  globalThis.fetch = realFetch
+})
 
 describe("toWebSearchResults", () => {
   test("maps organic results into websearch results", () => {
@@ -36,5 +58,48 @@ describe("toWebSearchResults", () => {
   test("drops an unparseable date instead of emitting NaN", () => {
     const [result] = toWebSearchResults([{ link: "https://example.com", date: "not a date" }])
     expect(result.time).toEqual({})
+  })
+})
+
+describe("transport", () => {
+  test("googleSearch posts to the google endpoint with the API key and JSON body", async () => {
+    const calls = stubFetch(Response.json({ organic: [] }))
+
+    await googleSearch("search", "secret", { q: "hi", num: 3 })
+
+    expect(calls).toHaveLength(1)
+    expect(calls[0].url).toBe(`${GOOGLE_BASE}/search`)
+    expect(calls[0].init.method).toBe("POST")
+    expect(calls[0].init.body).toBe(JSON.stringify({ q: "hi", num: 3 }))
+    expect(calls[0].init.headers).toMatchObject({
+      "X-API-KEY": "secret",
+      "Content-Type": "application/json",
+    })
+  })
+
+  test("serperScrape posts to the scrape endpoint and returns parsed JSON", async () => {
+    const calls = stubFetch(Response.json({ text: "hello" }))
+
+    const result = await serperScrape<{ text: string }>("secret", { url: "https://example.com" })
+
+    expect(calls[0].url).toBe(SCRAPE_ENDPOINT)
+    expect(result).toEqual({ text: "hello" })
+  })
+
+  test("forwards the abort signal to fetch", async () => {
+    const calls = stubFetch(Response.json({ organic: [] }))
+    const controller = new AbortController()
+
+    await googleSearch("search", "secret", { q: "hi" }, controller.signal)
+
+    expect(calls[0].init.signal).toBe(controller.signal)
+  })
+
+  test("throws with the status and body on a non-2xx response", async () => {
+    stubFetch(new Response("bad key", { status: 401 }))
+
+    await expect(googleSearch("search", "secret", { q: "hi" })).rejects.toThrow(
+      /failed with HTTP 401: bad key/,
+    )
   })
 })
