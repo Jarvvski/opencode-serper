@@ -1,0 +1,43 @@
+{
+  "name": "@jarvvski/opencode-serper",
+  "version": "0.1.0",
+  "description": "Serper web search provider and search/scrape tools for OpenCode",
+  "type": "module",
+  "license": "MIT",
+  "author": "Adam Jarvis",
+  "homepage": "https://github.com/Jarvvski/opencode-serper#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jarvvski/opencode-serper.git"
+  },
+  "keywords": [
+    "opencode",
+    "opencode-plugin",
+    "serper",
+    "websearch",
+    "search",
+    "scrape"
+  ],
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "@opencode/plugin": "^2.0.27"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "latest"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
