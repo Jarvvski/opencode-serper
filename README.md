@@ -1,87 +1,44 @@
-# @jarvvski/opencode-serper
+# opencode-serper
 
-A [Serper](https://serper.dev) plugin for [OpenCode](https://opencode.ai): it registers
-Serper as a web search provider and adds a set of `serper.*` search and scraping tools.
+[![CI](https://github.com/Jarvvski/opencode-serper/actions/workflows/ci.yml/badge.svg)](https://github.com/Jarvvski/opencode-serper/actions/workflows/ci.yml)
 
-## Features
+Serper web search and scraping for [OpenCode](https://opencode.ai). The plugin
+registers [Serper](https://serper.dev) as a `websearch` provider - so the
+built-in search tool, and every agent that already uses it, search through
+Serper - and adds a namespace of `serper.*` tools for the rest of Serper's
+endpoints.
 
-- **Web search provider** — Serper becomes a selectable `websearch` provider, so the
-  built-in `websearch` tool (and every agent that uses it) searches via Serper.
-- **Search & scrape tools** — Google web/news/scholar/places/images search, autocomplete,
-  and URL scraping, exposed under the `serper` tool namespace.
-- **`/connect` integration** — connect Serper once from the TUI; the key is stored in
-  OpenCode's credential store, not in your config.
+**Status:** `0.1.0`, pre-1.0. Installed from Git; not yet published to npm.
 
-## Install
+## Quickstart
 
 ```sh
-opencode plugin add @jarvvski/opencode-serper
+opencode plugin add github:Jarvvski/opencode-serper
 ```
 
-Or reference a checkout directly in `opencode.jsonc`:
+Restart OpenCode, then run `/connect`, choose **Serper**, and paste your API key.
+Serper is now the default web search provider: ask for current information and
+the built-in `websearch` tool uses it.
 
-```jsonc
-{
-  "plugins": ["/absolute/path/to/opencode-serper"],
-}
-```
+That is the whole setup. Agents can additionally call the `serper.*` tools
+(`news`, `scholar`, `places`, `images`, `autocomplete`, `scrape`) in Code Mode.
 
-Restart OpenCode after adding a local plugin so it is loaded.
+Full walkthrough, every tool, and troubleshooting:
+**[docs/usage.md](docs/usage.md)**.
 
-## Configure the API key
+## Documentation
 
-Pick one:
+- [Usage](docs/usage.md) - install, connect, search, every tool, examples.
+- [Configuration](docs/configuration.md) - key resolution, options, env, permissions.
+- [Architecture](docs/architecture.md) - how the plugin registers and maps results.
+- [`docs/adr/`](docs/adr/) - design decisions.
+- [`CHANGELOG.md`](CHANGELOG.md) - what has landed.
 
-1. **`/connect` (recommended)** — run `/connect` in the TUI, choose **Serper**, and paste
-   your API key. It is stored in OpenCode's credential store.
-2. **Environment variable** — set `SERPER_API_KEY` before starting OpenCode.
-3. **Plugin option** — pass it explicitly:
+## Contributing
 
-   ```jsonc
-   {
-     "plugins": [
-       { "package": "@jarvvski/opencode-serper", "options": { "apiKey": "..." } },
-     ],
-   }
-   ```
-
-Resolution order is: `/connect` credential → `options.apiKey` → `SERPER_API_KEY`.
-
-## Use as the web search provider
-
-The plugin selects itself as the default provider on load. To be explicit, or to switch
-back, set it in `opencode.jsonc`:
-
-```jsonc
-{
-  "websearch": { "provider": "serper" },
-}
-```
-
-## Tools
-
-Available to agents in Code Mode as `tools.serper.<name>`:
-
-| Tool           | Description                                          |
-| -------------- | ---------------------------------------------------- |
-| `search`       | Google web search (`q`, `gl`, `hl`, `num`)           |
-| `news`         | Google News search                                   |
-| `scholar`      | Google Scholar search                                |
-| `places`       | Google Places search (address, rating, contact)      |
-| `images`       | Google Images search                                 |
-| `autocomplete` | Google autocomplete suggestions                      |
-| `scrape`       | Scrape a URL and return its extracted content        |
-
-Each returns the Serper response as pretty-printed JSON.
-
-## Development
-
-```sh
-bun install
-bun run typecheck
-bun test
-```
+Project conventions and agent guidance live in [`AGENTS.md`](AGENTS.md)
+([`CLAUDE.md`](CLAUDE.md) is a symlink to it).
 
 ## License
 
-[MIT](./LICENSE)
+MIT. See [`LICENSE`](LICENSE).

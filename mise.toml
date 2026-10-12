@@ -1,0 +1,15 @@
+[tools]
+# Pinned so local runs and CI agree on the runtime.
+bun = "1.4"
+
+[tasks.typecheck]
+description = "Type-check the plugin against @opencode/plugin"
+run = "bun run typecheck"
+
+[tasks.test]
+description = "Run the unit tests"
+run = "bun test"
+
+[tasks.check]
+description = "typecheck + tests (the pre-land gate)"
+run = "mise run typecheck && mise run test"
