@@ -45,7 +45,7 @@ interface RecordedTool {
  * A structural stand-in for Plugin.Context that records every registration the
  * plugin makes, so the wiring can be asserted without a live OpenCode runtime.
  */
-function recordingContext() {
+function recordingContext(options: Record<string, unknown> = {}) {
   const integrations: RecordedIntegration[] = []
   const methods: RecordedMethod[] = []
   const namespaces: Array<{ name: string; description: string }> = []
@@ -58,7 +58,7 @@ function recordingContext() {
   let defaultProvider: string | undefined
 
   const ctx = {
-    options: {},
+    options,
     integration: {
       connection: {
         active: async () => undefined,
@@ -149,6 +149,14 @@ describe("plugin registration", () => {
     expect(rec.providers[0].name).toBe("Serper")
     expect(typeof rec.providers[0].execute).toBe("function")
     expect(rec.getDefaultProvider()).toBe("serper")
+  })
+
+  test("does not override the default provider when setDefault is false", async () => {
+    const rec = recordingContext({ setDefault: false })
+    await plugin.setup(rec.ctx)
+
+    expect(rec.providers).toHaveLength(1)
+    expect(rec.getDefaultProvider()).toBeUndefined()
   })
 
   test("registers the serper tool namespace", async () => {

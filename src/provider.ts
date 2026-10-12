@@ -21,6 +21,9 @@ export async function registerProvider(ctx: Plugin.Context): Promise<void> {
         return toWebSearchResults(data.organic ?? [])
       },
     })
-    editor.default.set(PROVIDER_ID)
+    // Select Serper as the default provider unless the user opted out with
+    // `options: { setDefault: false }`, so installing the plugin does not
+    // silently override a websearch provider they chose on purpose.
+    if (ctx.options.setDefault !== false) editor.default.set(PROVIDER_ID)
   })
 }
